@@ -21,5 +21,4 @@ def process_billing_webhook(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        
-        raise HTTPException(status_code=500, detail="Internal server error while processing webhook")
+        raise HTTPException(status_code=500, detail=f"Internal server error while processing webhook: {str(e)}")

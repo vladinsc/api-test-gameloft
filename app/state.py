@@ -1,9 +1,9 @@
 from enum import Enum 
 from datetime import datetime, timedelta
 from app.config import settings
-SUBSCRIPTION_PERIOD = settings.SUBSCRIPTION_PERIOD_DAYS
-TRIAL_PERIOD = settings.TRIAL_PERIOD_DAYS
-GRACE_PERIOD_DAYS = settings.GRACE_PERIOD_DAYS
+SUBSCRIPTION_PERIOD = settings.subscription_period_days
+TRIAL_PERIOD = settings.trial_period_days
+GRACE_PERIOD_DAYS = settings.grace_period_days
 class SubscriptionState(str, Enum):
     TRIALING = "trialing"
     ACTIVE = "active"
@@ -35,6 +35,8 @@ class Subscription:
         """
         State -> Cancelled unconditionally, even if the subscription is in trialing or active state.
         """
+        if self.state == SubscriptionState.CANCELED:
+            raise ValueError(f"Subscription is already cancelled. Subscription id: {self.id}")
         self.state = SubscriptionState.CANCELED
  
     def handle_payment_success(self, event_timestamp: datetime):
@@ -46,7 +48,9 @@ class Subscription:
             A cancelled subscription will not be reactivated.
             When a user wants to reactivate a subscription we can create a new subscription. 
             Maybe in this scenario where a user cancelled their subscription and a payment went trough we can log this event and start a refund process.
+
             """
+            raise ValueError(f"Payment success event received for a cancelled subscription. Subscription id: {self.id}")
             return
         if self.state in [SubscriptionState.TRIALING, SubscriptionState.GRACE, SubscriptionState.ACTIVE]:
             self.state = SubscriptionState.ACTIVE
@@ -69,7 +73,7 @@ class Subscription:
             return
         if self.state == SubscriptionState.TRIALING or self.state == SubscriptionState.ACTIVE:
             self.state = SubscriptionState.GRACE
-            self.period_end_at = event_timestamp + timedelta(days=GRACE_PERIOD_DAYS)
+            self.period_end_at = max(event_timestamp, self.period_end_at) + timedelta(days=GRACE_PERIOD_DAYS)
             
         elif self.state == SubscriptionState.GRACE and event_timestamp > self.period_end_at:
             self.state = SubscriptionState.CANCELED

@@ -6,6 +6,6 @@ class Settings(BaseSettings):
     trial_period_days: int = 7
     grace_period_days: int = 3
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 settings = Settings()

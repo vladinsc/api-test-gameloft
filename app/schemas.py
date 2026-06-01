@@ -18,7 +18,7 @@ class BillingWebhookPayload(BaseModel):
 class SubscriptionResponse(BaseModel):
     id: str
     state: SubscriptionState
-    period_ned_at: datetime
+    period_end_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 

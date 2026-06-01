@@ -1,4 +1,4 @@
-from sqlalchemy import Session
+from sqlalchemy.orm import Session
 from app.models import SubscriptionModel, ProcessedEventModel, AuditLogModel
 from app.state import SubscriptionState, Subscription
 
@@ -54,7 +54,7 @@ class SubscriptionRepository:
     
     def get_audit_history(self, sub_id: str) -> list[AuditLogModel]:
         """Fetches the chronological history of a subscription."""
-        return self.session.query(AuditLogModel)\
+        return self.db.query(AuditLogModel)\
             .filter_by(subscription_id=sub_id)\
             .order_by(AuditLogModel.timestamp.desc())\
             .all()

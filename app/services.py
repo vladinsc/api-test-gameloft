@@ -15,7 +15,7 @@ class SubscriptionService:
         """Create new subscription with default trial period and return it"""
         subscription = Subscription(
             id=f"sub_{uuid7().hex}",
-            state=SubscriptionState.trial,
+            state=SubscriptionState.TRIALING,
             period_end_at=datetime.now(timezone.utc) + timedelta(days=settings.trial_period_days)
         )
         try: 

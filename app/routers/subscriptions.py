@@ -1,8 +1,8 @@
-from FastAPI import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db import get_db
 from app.services import SubscriptionService    
-from app.schemas import AuditLogResponse, SubscriptionResponse, CancelSubscriptionResponse
+from app.schemas import AuditLogResponse, SubscriptionResponse, CancelResponse
 router = APIRouter()
 
 def get_subscription_service(db: Session = Depends(get_db)):
@@ -23,7 +23,7 @@ def get_subscription(subscription_id: str, service: SubscriptionService = Depend
         raise HTTPException(status_code=404, detail="Subscription not found")
     return subscription
 
-@router.post("/{subscription_id}/cancel", response_model=CancelSubscriptionResponse)
+@router.post("/{subscription_id}/cancel", response_model=CancelResponse)
 def cancel_subscription(subscription_id: str, service: SubscriptionService = Depends(get_subscription_service)):
     """User-initiated cancelation of subscription"""
     try: 
